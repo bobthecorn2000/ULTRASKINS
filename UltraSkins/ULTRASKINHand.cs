@@ -3,46 +3,34 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HarmonyLib;
-using UMM;
+
 using Unity.Audio;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-<<<<<<< Updated upstream
-=======
-
+using TMPro;
 using System.Reflection;
 
 
 using BepInEx.Logging;
->>>>>>> Stashed changes
+using BepInEx;
 
 
 namespace UltraSkins
 {
-<<<<<<< Updated upstream
-	[UKPlugin("Tony.UltraSkins",
-        "ULTRASKINS", "1.6.0", 
-        "This mod allows you to swap the textures and colors of your arsenal to your liking. \n Please read the included readme file inside of the ULTRASKINS folder."
-        , true, true)]
-	public class ULTRASKINHand : UKMod
-	{
 
-		public static Dictionary<string, Texture> autoSwapCache = new Dictionary<string, Texture>();
-=======
-   [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
-   
-    
+
+    [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
     public class ULTRASKINHand : BaseUnityPlugin
     {
-        
+
         public const string PLUGIN_NAME = "UltraSkins";
         public const string PLUGIN_GUID = "ultrakill.UltraSkins.bobthecorn";
         public const string PLUGIN_VERSION = "3.1.1";
-        private string modFolderPath;
+        public string modFolderPath;
         string dlllocation = Assembly.GetExecutingAssembly().Location.ToString();
-        
+
 
         private static string _modPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
         private static string _skinPath = Path.Combine(_modPath, "Custom");
@@ -69,9 +57,8 @@ namespace UltraSkins
 
 
         public static Dictionary<string, Texture> autoSwapCache = new Dictionary<string, Texture>();
->>>>>>> Stashed changes
-		public string[] directories;
-		public string serializedSet = "";
+        public string[] directories;
+        public string serializedSet = "";
         public bool swapped = false;
         Harmony UKSHarmony;
         AssetBundle bundle0;
@@ -79,20 +66,16 @@ namespace UltraSkins
         static Shader DE;
         static Cubemap cubemap;
 
-<<<<<<< Updated upstream
-        public override void OnModLoaded()
-=======
-        }
 
 
-            private void Awake()
-        {
+
+        private void Awake() {
             System.Diagnostics.Debugger.Break();
 
             // get our dll location 
 
             string dir = Path.GetDirectoryName(dlllocation);
-            SkinEventHandler.getskinfolder(dir);
+            
 
             SceneManager.sceneLoaded += SceneManagerOnsceneLoaded;
             Debug.Log("starting scene");
@@ -103,20 +86,15 @@ namespace UltraSkins
 
         }
         public void OnModLoaded()
->>>>>>> Stashed changes
         {
-			UKSHarmony = new Harmony("GCorn.UltraSkins");
+            UKSHarmony = new Harmony("GCorn.UltraSkins");
             UKSHarmony.PatchAll(typeof(HarmonyGunPatcher));
             UKSHarmony.PatchAll(typeof(HarmonyProjectilePatcher));
             UKSHarmony.PatchAll();
-		}
+            
+        }
 
-		public override void OnModUnload()
-		{
-            bundle0 = null;
-			UKSHarmony.UnpatchSelf();
-			UKSHarmony = null;
-		}
+
 
         [HarmonyPatch]
         public class HarmonyGunPatcher
@@ -142,7 +120,7 @@ namespace UltraSkins
             }
 
 
-            [HarmonyPatch(typeof(GunControl), "UpdateWeaponList", new Type[] {typeof(bool)})]
+            [HarmonyPatch(typeof(GunControl), "UpdateWeaponList", new Type[] { typeof(bool) })]
             [HarmonyPostfix]
             public static void UpdateWeaponListPost(GunControl __instance, bool firstTime = false)
             {
@@ -167,7 +145,7 @@ namespace UltraSkins
             public static void SwitchFistPost(FistControl __instance, int orderNum)
             {
                 TextureOverWatch[] TOWS = __instance.currentArmObject.GetComponentsInChildren<TextureOverWatch>(true);
-				ReloadTextureOverWatch(TOWS);
+                ReloadTextureOverWatch(TOWS);
             }
 
             [HarmonyPatch(typeof(FistControl), "ResetFists")]
@@ -191,14 +169,14 @@ namespace UltraSkins
                         DualWield[] DWs = GunControl.Instance.GetComponentsInChildren<DualWield>(true);
                         foreach (DualWield DW in DWs)
                         {
-                            if(DW)
+                            if (DW)
                             {
                                 Renderer[] renderers = DW.GetComponentsInChildren<Renderer>(true);
-                                foreach(Renderer renderer in renderers)
+                                foreach (Renderer renderer in renderers)
                                 {
-                                    if(renderer && renderer.gameObject.layer == 13 && !renderer.gameObject.GetComponent<ParticleSystemRenderer>() && !renderer.gameObject.GetComponent<CanvasRenderer>())
+                                    if (renderer && renderer.gameObject.layer == 13 && !renderer.gameObject.GetComponent<ParticleSystemRenderer>() && !renderer.gameObject.GetComponent<CanvasRenderer>())
                                     {
-                                        if(!renderer.gameObject.GetComponent<TextureOverWatch>())
+                                        if (!renderer.gameObject.GetComponent<TextureOverWatch>())
                                         {
                                             TextureOverWatch TOW = renderer.gameObject.AddComponent<TextureOverWatch>();
                                         }
@@ -231,7 +209,7 @@ namespace UltraSkins
 
 
             public static void ReloadTextureOverWatch(TextureOverWatch[] TOWS)
-			{
+            {
                 foreach (TextureOverWatch TOW in TOWS)
                 {
                     TOW.enabled = true;
@@ -242,16 +220,16 @@ namespace UltraSkins
         [HarmonyPatch]
         public class HarmonyProjectilePatcher
         {
-           [HarmonyPatch(typeof(Nail), "Start")]
-           [HarmonyPostfix]
-           public static void NailPost(Nail __instance)
-           {
-               if(__instance.sawblade)
+            [HarmonyPatch(typeof(Nail), "Start")]
+            [HarmonyPostfix]
+            public static void NailPost(Nail __instance)
+            {
+                if (__instance.sawblade)
                 {
                     AddTOWs(__instance.gameObject, false, true);
                 }
 
-           }
+            }
 
             [HarmonyPatch(typeof(Magnet), "Start")]
             [HarmonyPostfix]
@@ -282,7 +260,7 @@ namespace UltraSkins
                 }
             }
 
-            public static void AddTOWs(GameObject gameobject, bool toself = true, bool tochildren = false , bool toparent = false, bool refresh = false)
+            public static void AddTOWs(GameObject gameobject, bool toself = true, bool tochildren = false, bool toparent = false, bool refresh = false)
             {
                 if (toself)
                 {
@@ -335,9 +313,11 @@ namespace UltraSkins
 
         }
 
-        private void Start()
+        public void Start(SkinEventHandler skinEventHandler)
         {
+            //string modFolderPath = skinEventHandler.GetModFolderPath();
 
+            LoadTextures(modFolderPath);
 
         }
         private void OnDestroy()
@@ -345,35 +325,36 @@ namespace UltraSkins
             SceneManager.sceneLoaded -= SceneManagerOnsceneLoaded;
         }
         private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode)
-		{
+        {
             Debug.Log("new scene pog");
-			swapped = false;
+            modFolderPath = SkinEventHandler.GetModFolderPath();
+            LoadTextures(modFolderPath);
+            //ReloadTextures(true, modFolderPath);
+            Debug.Log("modfolder: " + modFolderPath);
+            swapped = false;
             if (CCE == null)
-			    CCE = Addressables.LoadAssetAsync<Shader>("Assets/Shaders/Special/ULTRAKILL-vertexlit-customcolors-emissive.shader").WaitForCompletion();
-			if (DE == null)
+                CCE = Addressables.LoadAssetAsync<Shader>("Assets/Shaders/Special/ULTRAKILL-vertexlit-customcolors-emissive.shader").WaitForCompletion();
+            if (DE == null)
                 DE = Addressables.LoadAssetAsync<Shader>("Assets/Shaders/Main/ULTRAKILL-vertexlit-emissive.shader").WaitForCompletion();
-			if (cubemap == null)
+            if (cubemap == null)
                 cubemap = Addressables.LoadAssetAsync<Cubemap>("Assets/Textures/studio_06.exr").WaitForCompletion();
-			CreateSkinGUI();
-		}
+            CreateSkinGUI();
+        }
 
         public void CreateSkinGUI()
         {
             Debug.Log("trying to make skingui");
             foreach (ShopGearChecker shopGearChecker in Resources.FindObjectsOfTypeAll<ShopGearChecker>())
             {
-<<<<<<< Updated upstream
-                string[] dirs = Directory.GetDirectories(modFolder);
-=======
                 string dir = Path.GetDirectoryName(dlllocation);
                 string[] dirs = Directory.GetDirectories(dir);
->>>>>>> Stashed changes
                 directories = dirs;
                 ShopCategory[] SCs = shopGearChecker.GetComponentsInChildren<ShopCategory>(true);
                 GameObject PresetsMenu = Instantiate(shopGearChecker.transform.GetChild(3).GetComponent<ShopButton>().toActivate[0], shopGearChecker.transform);
                 PresetsMenu.name = "ultraskins window";
                 foreach (var varInfo in PresetsMenu.GetComponentsInChildren<VariationInfo>())
                     GameObject.Destroy(varInfo);
+               
                 PresetsMenu.SetActive(false);
                 foreach (ShopCategory SC in SCs)
                 {
@@ -392,12 +373,12 @@ namespace UltraSkins
                 List<GameObject> toDeactivate = SCs[0].GetComponent<ShopButton>().toDeactivate.ToList();
                 Debug.Log("todeactivate ran");
                 if (SCs[0].GetComponent<ShopButton>().toActivate.Length != 0)
-				    toDeactivate.Add(SCs[0].GetComponent<ShopButton>().toActivate[0]);
+                    toDeactivate.Add(SCs[0].GetComponent<ShopButton>().toActivate[0]);
                 toDeactivate.Remove(PresetsMenu);
                 Debug.Log("todeactivate preset menu ran");
                 button.GetComponent<ShopButton>().toDeactivate = toDeactivate.ToArray();
                 Debug.Log("made an array");
-               // button.GetComponentInChildren<Text>().m_text = "ULTRASKINS";
+                button.GetComponentInChildren<TextMeshProUGUI>().text = "ULTRASKINS";
                 Debug.Log("text should be set");
                 button.GetComponent<RectTransform>().SetAsFirstSibling();
                 for (int p = 2; p < PresetsMenu.transform.childCount; p++)
@@ -424,22 +405,38 @@ namespace UltraSkins
                     {
                         int pagebuttonnumber = Mathf.Clamp((e * 3) + d, 0, dirs.Length - 1);
                         GameObject FoldBut = Instantiate(FolderButton, Page.transform);
+                        
                         FoldBut.name = "button" + pagebuttonnumber;
+                        Debug.Log(FoldBut.name);
                         Destroy(FoldBut.transform.GetChild(2).gameObject);
+                        Debug.Log("crush");
                         Destroy(FoldBut.transform.GetChild(4).gameObject);
+                        Debug.Log("kill");
                         Destroy(FoldBut.transform.GetChild(5).gameObject);
-                        FoldBut.GetComponentInChildren<Text>().text = Path.GetFileName(dirs[pagebuttonnumber]);
-                        FoldBut.GetComponentInChildren<Text>().transform.localPosition = new Vector3(-325, 15, -15);
+                        Debug.Log("destroy");
+                        FoldBut.GetComponentInChildren<TextMeshProUGUI>().text = Path.GetFileName(dirs[pagebuttonnumber]);
+                        Debug.Log("renaming folder");
+                        FoldBut.GetComponentInChildren<TextMeshProUGUI>().transform.localPosition = new Vector3(-325, 15, -15);
+                        Debug.Log("trying to move folder");
                         FoldBut.transform.localPosition = new Vector3(0, 300 - (85 * d), -15);
                         GameObject AGO = Instantiate(FoldBut, button.transform);
+                        Debug.Log("ago");
                         AGO.SetActive(false);
+                        Debug.Log("activate ago");
                         SkinEventHandler skinEventHandler = FoldBut.gameObject.AddComponent<SkinEventHandler>();
+                        Debug.Log("adding component");
                         skinEventHandler.UKSH = transform.GetComponent<ULTRASKINHand>();
+                        Debug.Log("merging uksh");
                         skinEventHandler.Activator = AGO;
+                        Debug.Log("activator is ago");
                         skinEventHandler.path = dirs[pagebuttonnumber];
+                        Debug.Log("setting path");
                         skinEventHandler.pname = Path.GetFileName(dirs[pagebuttonnumber]);
-                        FoldBut.GetComponent<ShopButton>().toActivate = new GameObject[] { AGO };
-                        FoldBut.GetComponent<ShopButton>().toDeactivate = new GameObject[0];
+                        Debug.Log("setting pname");
+                        //FoldBut.GetComponent<ShopButton>().toActivate = new GameObject[] { AGO };
+                        Debug.Log("foldbutago");
+                        //FoldBut.GetComponent<ShopButton>().toDeactivate = new GameObject[0];
+                        Debug.Log("deactivate for now");
                     }
                     if (e != 0)
                         Page.gameObject.SetActive(false);
@@ -453,9 +450,9 @@ namespace UltraSkins
                     Destroy(FoldBut.GetComponent<VariationInfo>());
                     FoldBut.GetComponent<RectTransform>().sizeDelta = new Vector2(180, 80);
                     FoldBut.gameObject.name = (r == 1) ? "<<" : ">>";
-                    FoldBut.GetComponentInChildren<Text>().text = (r == 1) ? "<<" : ">>";
-                    FoldBut.GetComponentInChildren<Text>().fontSize = 34;
-                    FoldBut.GetComponentInChildren<Text>().transform.localPosition = new Vector3(-95, 15, -15);
+                    FoldBut.GetComponentInChildren<TextMeshProUGUI>().text = (r == 1) ? "<<" : ">>";
+                    FoldBut.GetComponentInChildren<TextMeshProUGUI>().fontSize = 34;
+                    FoldBut.GetComponentInChildren<TextMeshProUGUI>().transform.localPosition = new Vector3(-95, 15, -15);
                     FoldBut.transform.localPosition = new Vector3((r == 1) ? -180 : 0, 45, -15);
                     GameObject AGO = Instantiate(FoldBut, button.transform);
                     AGO.SetActive(false);
@@ -464,12 +461,14 @@ namespace UltraSkins
                     PEH.pageEventHandler = PGEH;
                     PEH.Activator = AGO;
                     PEH.moveamount = (r == 1) ? -1 : 1;
-                    FoldBut.GetComponent<ShopButton>().toActivate = new GameObject[] { AGO };
-                    FoldBut.GetComponent<ShopButton>().toDeactivate = new GameObject[0];
+                   // FoldBut.GetComponent<ShopButton>().toActivate = new GameObject[] { AGO };
+                    //FoldBut.GetComponent<ShopButton>().toDeactivate = new GameObject[0];
                 }
                 FolderButton.SetActive(false);
             }
         }
+
+    
 
 
         public static Texture ResolveTheTextureProperty(Material mat, string property, string propertyfallback = "_MainTex")
@@ -634,18 +633,7 @@ namespace UltraSkins
         }
 
 
-        private void Update()
-		{
-			if (!swapped)
-			{
-				if (UKMod.PersistentModDataExists("SkinsFolder", "Tony.UltraSkins"))
-				{
-					serializedSet = RetrieveStringPersistentModData("SkinsFolder", "Tony.UltraSkins");
-				}
-				ReloadTextures(true);
-				swapped = true;
-			}
-        }
+
 
         public static bool CheckTextureInCache(string name)
         {
@@ -654,25 +642,25 @@ namespace UltraSkins
             return false;
         }
 
-		public string ReloadTextures(bool firsttime = false, string path = "")
-		{
-			if(firsttime && serializedSet != "")
-			{
-				path = Path.Combine(modFolder, serializedSet);
-            }
-			else if (firsttime && serializedSet == "")
+        public string ReloadTextures(bool firsttime = false, string path = "")
+        {
+            if (firsttime && serializedSet != "")
             {
-				path = Path.Combine(modFolder, "OG Textures");
+                path = serializedSet;
             }
-            if(path == "")
+            else if (firsttime && serializedSet == "")
             {
-				path = Path.Combine(modFolder, "OG Textures");
+                path = path;
+            }
+            if (path == "")
+            {
+                path = path;
             }
             InitOWGameObjects(firsttime);
-			return LoadTextures(path);
-		}
+            return LoadTextures(path);
+        }
 
-		public static void InitOWGameObjects(bool firsttime = false)
+        public static void InitOWGameObjects(bool firsttime = false)
 		{
 			GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
 			foreach (Renderer renderer in cam.GetComponentsInChildren<Renderer>(true))
@@ -695,6 +683,7 @@ namespace UltraSkins
 
 		public string LoadTextures(string fpath = "")
 		{
+            Debug.Log("starting swap");
             autoSwapCache.Clear();
 			bool failed = false;
             DirectoryInfo dir = new DirectoryInfo(fpath);
@@ -747,4 +736,5 @@ namespace UltraSkins
 			return "Failed to load all textures from " + Path.GetFileName(fpath) + ".\nPlease ensure all of the Texture Files names are Correct, refer to the README file for the correct names and more info.";
 		}
 	}
+
 }

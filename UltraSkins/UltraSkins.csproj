@@ -27,9 +27,6 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>libs\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="UMM">
-      <HintPath>libs\UMM.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Addressables">
       <HintPath>libs\Unity.Addressables.dll</HintPath>
     </Reference>
@@ -42,5 +39,8 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>libs\UnityEngine.UI.dll</HintPath>
     </Reference>
+	  <Reference Include="UnityEngine.TextMeshPro">
+		  <HintPath>libs\Unity.TextMeshPro.dll</HintPath>
+	  </Reference> 
   </ItemGroup>
 </Project>
