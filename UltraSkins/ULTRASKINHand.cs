@@ -9,9 +9,19 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+<<<<<<< Updated upstream
+=======
+
+using System.Reflection;
+
+
+using BepInEx.Logging;
+>>>>>>> Stashed changes
+
 
 namespace UltraSkins
 {
+<<<<<<< Updated upstream
 	[UKPlugin("Tony.UltraSkins",
         "ULTRASKINS", "1.6.0", 
         "This mod allows you to swap the textures and colors of your arsenal to your liking. \n Please read the included readme file inside of the ULTRASKINS folder."
@@ -20,6 +30,46 @@ namespace UltraSkins
 	{
 
 		public static Dictionary<string, Texture> autoSwapCache = new Dictionary<string, Texture>();
+=======
+   [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
+   
+    
+    public class ULTRASKINHand : BaseUnityPlugin
+    {
+        
+        public const string PLUGIN_NAME = "UltraSkins";
+        public const string PLUGIN_GUID = "ultrakill.UltraSkins.bobthecorn";
+        public const string PLUGIN_VERSION = "3.1.1";
+        private string modFolderPath;
+        string dlllocation = Assembly.GetExecutingAssembly().Location.ToString();
+        
+
+        private static string _modPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+        private static string _skinPath = Path.Combine(_modPath, "Custom");
+
+        public List<string> Paths
+        {
+            get
+            {
+                string[] files = Directory.GetFiles(_skinPath);
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    files[i] = files[i].Split(Path.DirectorySeparatorChar).Last();
+                }
+
+                return files.ToList();
+            }
+        }
+
+        private List<Sprite> _default;
+        private List<Sprite> _edited;
+
+
+
+
+        public static Dictionary<string, Texture> autoSwapCache = new Dictionary<string, Texture>();
+>>>>>>> Stashed changes
 		public string[] directories;
 		public string serializedSet = "";
         public bool swapped = false;
@@ -29,9 +79,33 @@ namespace UltraSkins
         static Shader DE;
         static Cubemap cubemap;
 
+<<<<<<< Updated upstream
         public override void OnModLoaded()
+=======
+        }
+
+
+            private void Awake()
         {
-			UKSHarmony = new Harmony("Tony.UltraSkins");
+            System.Diagnostics.Debugger.Break();
+
+            // get our dll location 
+
+            string dir = Path.GetDirectoryName(dlllocation);
+            SkinEventHandler.getskinfolder(dir);
+
+            SceneManager.sceneLoaded += SceneManagerOnsceneLoaded;
+            Debug.Log("starting scene");
+            string pluginPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            // The GUID of the configurator must not be changed as it is used to locate the config file path
+            OnModLoaded();
+
+        }
+        public void OnModLoaded()
+>>>>>>> Stashed changes
+        {
+			UKSHarmony = new Harmony("GCorn.UltraSkins");
             UKSHarmony.PatchAll(typeof(HarmonyGunPatcher));
             UKSHarmony.PatchAll(typeof(HarmonyProjectilePatcher));
             UKSHarmony.PatchAll();
@@ -54,6 +128,7 @@ namespace UltraSkins
                 TextureOverWatch[] TOWS = __instance.currentWeapon.GetComponentsInChildren<TextureOverWatch>(true);
                 ReloadTextureOverWatch(TOWS);
             }
+
 
             [HarmonyPatch(typeof(GunControl), "YesWeapon")]
             [HarmonyPostfix]
@@ -262,11 +337,16 @@ namespace UltraSkins
 
         private void Start()
         {
-            SceneManager.sceneLoaded += SceneManagerOnsceneLoaded;
-        }
 
-		private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode)
+
+        }
+        private void OnDestroy()
+        {
+            SceneManager.sceneLoaded -= SceneManagerOnsceneLoaded;
+        }
+        private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode)
 		{
+            Debug.Log("new scene pog");
 			swapped = false;
             if (CCE == null)
 			    CCE = Addressables.LoadAssetAsync<Shader>("Assets/Shaders/Special/ULTRAKILL-vertexlit-customcolors-emissive.shader").WaitForCompletion();
@@ -279,9 +359,15 @@ namespace UltraSkins
 
         public void CreateSkinGUI()
         {
+            Debug.Log("trying to make skingui");
             foreach (ShopGearChecker shopGearChecker in Resources.FindObjectsOfTypeAll<ShopGearChecker>())
             {
+<<<<<<< Updated upstream
                 string[] dirs = Directory.GetDirectories(modFolder);
+=======
+                string dir = Path.GetDirectoryName(dlllocation);
+                string[] dirs = Directory.GetDirectories(dir);
+>>>>>>> Stashed changes
                 directories = dirs;
                 ShopCategory[] SCs = shopGearChecker.GetComponentsInChildren<ShopCategory>(true);
                 GameObject PresetsMenu = Instantiate(shopGearChecker.transform.GetChild(3).GetComponent<ShopButton>().toActivate[0], shopGearChecker.transform);
@@ -294,25 +380,34 @@ namespace UltraSkins
                     List<GameObject> deactivateobjects = SC.GetComponent<ShopButton>().toDeactivate.ToList();
                     deactivateobjects.Add(PresetsMenu);
                     SC.GetComponent<ShopButton>().toDeactivate = deactivateobjects.ToArray();
+                    Debug.Log(SC.ToString());
                 }
                 Transform button = Instantiate(shopGearChecker.transform.GetChild(3), shopGearChecker.transform);
                 button.name = "ultraskins button";
                 button.localPosition = new Vector3(-180f, -85f, -45f);
                 button.localScale = new Vector3(1f, 1f, 1f);
+                Debug.Log("button added");
                 button.GetComponent<ShopButton>().toActivate = new GameObject[] { PresetsMenu };
+                Debug.Log("gameobject made");
                 List<GameObject> toDeactivate = SCs[0].GetComponent<ShopButton>().toDeactivate.ToList();
+                Debug.Log("todeactivate ran");
                 if (SCs[0].GetComponent<ShopButton>().toActivate.Length != 0)
 				    toDeactivate.Add(SCs[0].GetComponent<ShopButton>().toActivate[0]);
                 toDeactivate.Remove(PresetsMenu);
+                Debug.Log("todeactivate preset menu ran");
                 button.GetComponent<ShopButton>().toDeactivate = toDeactivate.ToArray();
-				button.GetComponentInChildren<Text>().text = "ULTRASKINS";
+                Debug.Log("made an array");
+               // button.GetComponentInChildren<Text>().m_text = "ULTRASKINS";
+                Debug.Log("text should be set");
                 button.GetComponent<RectTransform>().SetAsFirstSibling();
                 for (int p = 2; p < PresetsMenu.transform.childCount; p++)
                 {
                     Destroy(PresetsMenu.transform.GetChild(p).gameObject);
                 }
+                Debug.Log("destroyed stuff");
                 GameObject FolderButton = PresetsMenu.transform.GetChild(1).gameObject;
                 FolderButton.SetActive(true);
+                Debug.Log("folder button made");
                 int numberofpages = (dirs.Length / 3);
                 GameObject pageHandler = Instantiate(new GameObject(), PresetsMenu.transform);
                 pageHandler.name = "Page Handler";
